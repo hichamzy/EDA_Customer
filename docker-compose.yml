@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  eda_inventory:
+    image: ${DOCKER_REGISTRY-}edainventory
+    build:
+      context: .
+      dockerfile: EDA_Inventory/Dockerfile
+
+  eda_customer:
+    image: ${DOCKER_REGISTRY-}edacustomer
+    build:
+      context: .
+      dockerfile: EDA_Customer/Dockerfile
+    ports:
+      - "8082:80"   # Mapping port 80 of the container to port 8082 on the host
+      - "8443:443"  # Mapping port 443 of the container to port 8443 on the host
+    hostname: "localhost"
+    
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # Default RabbitMQ port
+      - "15672:15672" # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
